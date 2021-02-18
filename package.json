@@ -1,0 +1,19 @@
+{
+  "name": "datto-rmm-alert-device",
+  "version": "1.0.0",
+  "description": "Visible/audible Datto RMM alerts on Raspberry Pi",
+  "main": "src/index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/informationdevelopment/datto-rmm-alert-device.git"
+  },
+  "author": "David Haymond",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/informationdevelopment/datto-rmm-alert-device/issues"
+  },
+  "homepage": "https://github.com/informationdevelopment/datto-rmm-alert-device#readme",
+  "dependencies": {
+    "rpio": "^2.4.2"
+  }
+}
