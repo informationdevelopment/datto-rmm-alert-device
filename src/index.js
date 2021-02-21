@@ -1,5 +1,3 @@
-require('dotenv').config();
-
 const {
     DRMM_API_URL,
     DRMM_API_KEY,
