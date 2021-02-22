@@ -1,3 +1,4 @@
+const debug = require('debug')('app:index');
 const { DattoRMMClient } = require('./datto-rmm.js');
 const gpio = require('./gpio.js');
 
@@ -14,16 +15,17 @@ const client = new DattoRMMClient(DRMM_API_URL, DRMM_API_KEY, DRMM_API_SECRET_KE
 async function pollForCriticalAlerts() {
     const alerts = await client.getCriticalAlerts();
     if (alerts.length) {
+        debug(`${alerts.length} critical alert(s) found`);
         gpio.startBlink();
     } else {
+        debug('no critical alerts found');
         gpio.stopBlink();
     }
 }
 
 function exit() {
-    console.log('exiting :(');
+    debug('exiting');
     gpio.stopBlink();
-    process.exit();
 }
 
 pollForCriticalAlerts();

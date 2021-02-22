@@ -31,9 +31,13 @@ class DattoRMMClient {
     }
 
     async #makeAuthRequest(endpoint) {
-        const sendRequest = () => fetch(`${this.url}/api${endpoint}`, {
-            headers: { Authorization: `Bearer ${this.#accessToken}` },
-        });
+        const sendRequest = () => {
+            const url = `${this.url}/api${endpoint}`;
+            debug(`sending authenticated request to ${url}`);
+            return fetch(url, {
+                headers: { Authorization: `Bearer ${this.#accessToken}` },
+            });
+        };
 
         let response;
         for (let i = 0; i < 2; i++) {
@@ -43,6 +47,7 @@ class DattoRMMClient {
 
             response = await sendRequest();
             if (response.status != 401) return response;
+            debug('401 Unauthorized: token expired.');
         }
 
         return response;

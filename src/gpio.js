@@ -14,15 +14,11 @@ function startBlink() {
 function stopBlink() {
     debug('stopping blinking');
     clearTimeout(blinkTimeout);
+    rpio.write(LED_PIN, rpio.LOW);
 }
 
 rpio.init({ mapping: 'gpio' });
-rpio.write(LED_PIN, rpio.OUTPUT, rpio.LOW);
-
-process.on('SIGINT', () => {
-    stopBlink();
-    rpio.write(LED_PIN, rpio.LOW);
-});
+rpio.open(LED_PIN, rpio.OUTPUT, rpio.LOW);
 
 module.exports = {
     startBlink,
