@@ -1,15 +1,20 @@
+const debug = require('debug')('app:datto-rmm');
 const fetch = require('node-fetch');
 
 class DattoRMMClient {
     #accessToken;
 
     constructor(url, key, secretKey) {
+        debug('initializing Datto RMM client');
+
         this.url = url;
         this.username = key;
         this.password = secretKey;
     }
 
     async #getAccessToken() {
+        debug('obtaining new access token');
+
         const encodedCredential = Buffer.from('public-client:public', 'utf-8').toString('base64');
         const body = new URLSearchParams({
             grant_type: 'password',
@@ -25,16 +30,30 @@ class DattoRMMClient {
         return (await res.json()).access_token;
     }
 
-    async getOpenAlerts() {
-        if (!this.#accessToken) {
-            this.#accessToken = await this.#getAccessToken();
-        }
-
-        const res = await fetch(`${this.url}/api/v2/account/alerts/open?muted=false`, {
+    async #makeAuthRequest(endpoint) {
+        const sendRequest = () => fetch(`${this.url}/api${endpoint}`, {
             headers: { Authorization: `Bearer ${this.#accessToken}` },
         });
+
+        let response;
+        for (let i = 0; i < 2; i++) {
+            if (!this.#accessToken || i > 0) {
+                this.#accessToken = await this.#getAccessToken();
+            }
+
+            response = await sendRequest();
+            if (response.status != 401) return response;
+        }
+
+        return response;
+    }
+
+    async getCriticalAlerts() {
+        debug('getting critical alerts');
+
+        const res = await this.#makeAuthRequest('/v2/account/alerts/open?muted=false');
         const data = await res.json();
-        return data;
+        return data.alerts.filter(alert => alert.priority.toLowerCase() == 'critical');
     }
 }
 

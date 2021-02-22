@@ -1,0 +1,3 @@
+services:
+  node:
+    restart: always
