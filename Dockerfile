@@ -16,6 +16,7 @@ RUN npm install --no-optional && npm cache clean --force
 # Copy in source files in a subdirectory
 # to avoid issues with bind-mounting node_modules
 WORKDIR /opt/approot/app
+COPY . .
 
 # Start the app
 CMD [ "node", "src/index.js" ]
