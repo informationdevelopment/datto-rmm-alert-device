@@ -2,6 +2,7 @@ const debug = require('debug')('app:gpio');
 const rpio = require('rpio');
 
 const LED_PIN = parseInt(process.env.LED_PIN);
+const LED_OFF = rpio.HIGH;
 
 const BLINK_SPEED = 500;
 let blinkTimeout, blinkCounter = 0;
@@ -14,11 +15,11 @@ function startBlink() {
 function stopBlink() {
     debug('stopping blinking');
     clearTimeout(blinkTimeout);
-    rpio.write(LED_PIN, rpio.LOW);
+    rpio.write(LED_PIN, LED_OFF);
 }
 
 rpio.init({ mapping: 'gpio' });
-rpio.open(LED_PIN, rpio.OUTPUT, rpio.LOW);
+rpio.open(LED_PIN, rpio.OUTPUT, LED_OFF);
 
 module.exports = {
     startBlink,
