@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "Visible/audible Datto RMM alerts on Raspberry Pi",
   "main": "src/index.js",
+  "scripts": {
+    "start": "node -r dotenv/config src/index.js"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/informationdevelopment/datto-rmm-alert-device.git"
@@ -15,6 +18,7 @@
   "homepage": "https://github.com/informationdevelopment/datto-rmm-alert-device#readme",
   "dependencies": {
     "debug": "^4.3.1",
+    "dotenv": "^8.2.0",
     "node-fetch": "^2.6.1",
     "rpio": "^2.4.2",
     "supports-color": "^8.1.1"

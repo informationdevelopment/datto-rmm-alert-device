@@ -1,11 +1,11 @@
-const debug = require('debug')('app:datto-rmm');
-const fetch = require('node-fetch');
+const debug = require("debug")("app:datto-rmm");
+const fetch = require("node-fetch");
 
 class DattoRMMClient {
     #accessToken;
 
     constructor(url, key, secretKey) {
-        debug('initializing Datto RMM client');
+        debug("initializing Datto RMM client");
 
         this.url = url;
         this.username = key;
@@ -13,17 +13,20 @@ class DattoRMMClient {
     }
 
     async #getAccessToken() {
-        debug('obtaining new access token');
+        debug("obtaining new access token");
 
-        const encodedCredential = Buffer.from('public-client:public', 'utf-8').toString('base64');
+        const encodedCredential = Buffer.from(
+            "public-client:public",
+            "utf-8"
+        ).toString("base64");
         const body = new URLSearchParams({
-            grant_type: 'password',
+            grant_type: "password",
             username: this.username,
             password: this.password,
         });
 
         const res = await fetch(`${this.url}/auth/oauth/token`, {
-            method: 'POST',
+            method: "POST",
             headers: { Authorization: `Basic ${encodedCredential}` },
             body,
         });
@@ -47,18 +50,22 @@ class DattoRMMClient {
 
             response = await sendRequest();
             if (response.status != 401) return response;
-            debug('401 Unauthorized: token expired.');
+            debug("401 Unauthorized: token expired.");
         }
 
         return response;
     }
 
     async getCriticalAlerts() {
-        debug('getting critical alerts');
+        debug("getting critical alerts");
 
-        const res = await this.#makeAuthRequest('/v2/account/alerts/open?muted=false');
+        const res = await this.#makeAuthRequest(
+            "/v2/account/alerts/open?muted=false"
+        );
         const data = await res.json();
-        return data.alerts.filter(alert => alert.priority.toLowerCase() == 'critical');
+        return data.alerts.filter(
+            (alert) => alert.priority.toLowerCase() == "critical"
+        );
     }
 }
 
