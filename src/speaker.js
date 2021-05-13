@@ -1,4 +1,5 @@
 const debug = require("debug")("app:speaker");
+const path = require("path");
 const { exec } = require("child_process");
 
 function playAlertSound() {

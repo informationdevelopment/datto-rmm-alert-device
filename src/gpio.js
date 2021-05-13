@@ -9,7 +9,7 @@ const BUTTON_PIN = parseInt(process.env.BUTTON_PIN);
 const buttonHandlers = new Set();
 
 const BLINK_SPEED = 500;
-let blinkTimeout = null;
+let blinkToken = null;
 let blinkState = LED_OFF;
 let closing = false;
 
@@ -21,20 +21,20 @@ function blink() {
 }
 
 function startBlink() {
-    if (blinkTimeout !== null || closing) return;
+    if (blinkToken !== null || closing) return;
 
     debug("starting blinking");
-    blinkTimeout = setInterval(blink, BLINK_SPEED);
+    blinkToken = setInterval(blink, BLINK_SPEED);
 }
 
 function stopBlink() {
-    if (blinkTimeout === null || closing) return;
+    if (blinkToken === null) return;
 
     debug("stopping blinking");
-    clearTimeout(blinkTimeout);
-    blinkState = LED_OFF;
-    blinkTimeout = null;
+    clearInterval(blinkToken);
     rpio.write(LED_PIN, LED_OFF);
+    blinkState = LED_OFF;
+    blinkToken = null;
 }
 
 function buttonPressed() {
@@ -58,6 +58,8 @@ function removeButtonHandler(handler) {
 function close() {
     closing = true;
     stopBlink();
+    rpio.poll(BUTTON_PIN, null);
+    buttonHandlers.clear();
 }
 
 rpio.init({ mapping: "gpio" });

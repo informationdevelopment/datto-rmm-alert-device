@@ -2,10 +2,18 @@ const debug = require("debug")("app");
 const gpio = require("./gpio");
 const { pollForCriticalAlerts } = require("./alerts");
 
-const POLL_INTERVAL = 60 * 1000;
+async function pollLoop() {
+    try {
+        await pollForCriticalAlerts();
+    } catch (err) {
+        console.error(err);
+        exit();
+    }
+}
 
-pollForCriticalAlerts();
-const pollToken = setInterval(pollForCriticalAlerts, POLL_INTERVAL);
+const POLL_INTERVAL = 60 * 1000;
+const pollToken = setInterval(pollLoop, POLL_INTERVAL);
+pollLoop();
 
 function exit() {
     debug("exiting");
