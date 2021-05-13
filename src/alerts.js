@@ -7,6 +7,7 @@ const { playAlertSound } = require("./speaker");
 const { DRMM_API_URL, DRMM_API_KEY, DRMM_API_SECRET_KEY } = process.env;
 let alerts = [];
 let store = readStore();
+let alerting = false;
 
 async function pollForCriticalAlerts() {
     const client = new DattoRMMClient(
@@ -15,18 +16,21 @@ async function pollForCriticalAlerts() {
         DRMM_API_SECRET_KEY
     );
 
-    const previousAlertCount = alerts.length;
     alerts = (await client.getCriticalAlerts()).map((alert) => alert.alertUid);
+    const unignoredAlerts = alerts.some(
+        (uid) => !store.ignoredAlerts.includes(uid)
+    );
 
-    if (alerts.length > 0) {
-        debug(`${alerts.length} critical alert(s) found`);
+    debug(`${alerts.length} critical alert(s) found`);
 
-        if (previousAlertCount === 0) {
+    if (unignoredAlerts) {
+        if (!alerting) {
+            alerting = true;
             gpio.startBlink();
             playAlertSound();
         }
     } else {
-        debug("no critical alerts found");
+        alerting = false;
         gpio.stopBlink();
     }
 
