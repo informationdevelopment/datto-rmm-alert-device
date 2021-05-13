@@ -9,6 +9,19 @@ let alerts = [];
 let store = readStore();
 let alerting = false;
 
+function startAlert() {
+    if (alerting) return;
+
+    alerting = true;
+    gpio.startBlink();
+    playAlertSound();
+}
+
+function stopAlert() {
+    alerting = false;
+    gpio.stopBlink();
+}
+
 async function pollForCriticalAlerts() {
     const client = new DattoRMMClient(
         DRMM_API_URL,
@@ -24,14 +37,9 @@ async function pollForCriticalAlerts() {
     debug(`${alerts.length} critical alert(s) found`);
 
     if (unignoredAlerts) {
-        if (!alerting) {
-            alerting = true;
-            gpio.startBlink();
-            playAlertSound();
-        }
+        startAlert();
     } else {
-        alerting = false;
-        gpio.stopBlink();
+        stopAlert();
     }
 
     store.ignoredAlerts = store.ignoredAlerts.filter((uid) =>
@@ -41,6 +49,7 @@ async function pollForCriticalAlerts() {
 }
 
 function ignoreCurrentAlerts() {
+    stopAlert();
     store.ignoredAlerts = [...alerts];
     writeStore(store);
 }
