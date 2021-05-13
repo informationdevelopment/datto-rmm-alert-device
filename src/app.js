@@ -14,3 +14,5 @@ function exit() {
 }
 
 process.on("SIGINT", exit);
+process.on("SIGTERM", exit);
+process.on("SIGKILL", exit);
