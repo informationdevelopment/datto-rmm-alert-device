@@ -1,7 +1,0 @@
-services:
-  node:
-    build:
-      context: .
-    env_file:
-      - ./.env
-    privileged: true
